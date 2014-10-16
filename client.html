@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+	</head>
+	<body>
+		<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+		<script>
+			var config = {
+				key: 'fun',
+				host: 'localhost',
+				port: 3001,
+				path: 'foo',
+				debug: 3
+			}
+			var id = new Date().getTime().toString(32);
+			var peer = new Peer(id , config);
+			peer.on('open', function (id) {
+				console.log('peer id', id);
+			});
+			var conn = peer.connect
+		</script>
+	</body>
+</html>
