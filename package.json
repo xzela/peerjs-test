@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/xzela/peerjs-test/issues"
   },
-  "homepage": "https://github.com/xzela/peerjs-test"
+  "homepage": "https://github.com/xzela/peerjs-test",
+  "dependencies": {
+    "express": "^4.9.7",
+    "peer": "^0.2.7"
+  }
 }
