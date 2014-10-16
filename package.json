@@ -1,0 +1,23 @@
+{
+  "name": "peerjs-test",
+  "version": "0.0.1",
+  "description": "testing the peerjs server and client webrtc framework",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"lol, tests...\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xzela/peerjs-test.git"
+  },
+  "keywords": [
+    "peerjs",
+    "webrtc"
+  ],
+  "author": "Zeph LaFassett <zeph@lafassett.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xzela/peerjs-test/issues"
+  },
+  "homepage": "https://github.com/xzela/peerjs-test"
+}
