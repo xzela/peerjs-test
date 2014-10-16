@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+	</head>
+	<body>
+		<h3>Peers</h3>
+		<ul id="peers">
+		</ul>
+
+		<h3>You [<span class="peerId"></span>]</h3>
+		<h3>Sent:</h3>
+		<pre class="local">
+		</pre>
+
+		<h3>Remote Messages:</h3>
+		<pre class="remote">
+		</pre>
+		<h3> Remote Connection Data:</h3>
+		<pre class="remote-connect-data">
+		</pre>
+
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+		<script>
+			function fetchPeers(id) {
+				$('#peers').empty();
+				$.getJSON('/peers?id=' + id, function (data) {
+					$.each(data, function (key, value) {
+						if (id !== value) {
+							$('#peers').append($('<li class="peer">').text(value));
+						}
+					});
+				});
+			}
+			$(document).ready(function () {
+
+				var config = {
+					key: 'fun',
+					// host: 'express.ngrok.com',
+					host: 'localhost',
+					port: 3001,
+					secure: true,
+					path: 'foo',
+					debug: 1
+				}
+				var id = new Date().getTime().toString(32);
+				$('.peerId').text(id);
+				var peer = new Peer(id , config);
+
+				peer.on('open', function (id) {
+					fetchPeers(id);
+					console.log('[local-peer]', 'peer id', id);
+					setInterval(function () {fetchPeers(id)}, 10000);
+				});
+
+				peer.on('data', function (data) {
+					console.log('[local-peer]', 'data:', data);
+				});
+
+				peer.on('connection', function (conn) {
+					console.log(conn);
+					conn.on('data', function (data) {
+						$('.remote').text('peer: ' + conn.peer + ', just sent: ' + data);
+						console.log('[local-peer]', 'remote peer sent:', data);
+					});
+				});
+
+				$('ul').on('click', 'li', function (evnt) {
+					var p2Id = $(this).text();
+					var conn = peer.connect(p2Id);
+					conn.on('open', function () {
+						var string = 'word up';
+						$('.local').text('You just sent: ' + string);
+						conn.send(string);
+
+						console.log('[local-peer]', 'open connection to remote peer:', p2Id);
+						conn.on('error', function (err) {
+							console.log(err);
+						});
+
+						$('.remote-connect-data').text(JSON.stringify(conn.peerConnection, null, '\t'));
+
+					});
+					// console.log(conn.peerConnection);
+				});
+
+
+			});
+		</script>
+	</body>
+</html>
