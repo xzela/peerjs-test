@@ -1,21 +1,68 @@
 <!doctype html>
 <html>
 	<head>
+		<style type="text/css">
+			.remote-connect-data {
+				display: hidden;
+			}
+			.container {
+				/*width: 600px;*/
+			}
+
+			.peer-list {
+				float: left;
+				width: 400px;
+				height: 100%;
+			}
+
+			.remote-peer {
+				float: right;
+				width: 600px;
+				height: 100%;
+			}
+			#peers li.peer {
+				color: blue;
+				text-decoration: none;
+			}
+
+			#peers li.peer:hover {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+
+			.you {
+				clear: both;
+			}
+		</style>
 	</head>
 	<body>
-		<h3>Peers</h3>
-		<ul id="peers">
-		</ul>
+		<div class="container">
+			<div class="peer-list">
+				<h3>Connected Peers</h3>
+				<ul id="peers">
+				</ul>
+			</div>
+			<div class="remote-peer">
+				<h3>Currently Connected to Peer: <span id="remote-peer-id"></span></h3>
+				<h3>Messages:</h3>
+				<ul class="remote-peer-messages">
+				</ul>
+			</div>
+			<div class="you">
+				<h3>You [<span class="peerId"></span>]</h3>
+				<div>
+					<input type="text" name="chatbox" /> <input type="button" name="chatbox-btn" class="chatbox-btn" value="send"/>
+				</div>
+				<h3>Sent:</h3>
+				<ul class='your-messages'>
+				</ul>
+			</div>
 
-		<h3>You [<span class="peerId"></span>]</h3>
-		<h3>Sent:</h3>
-		<pre class="local">
-		</pre>
+		</div>
 
-		<h3>Remote Messages:</h3>
-		<pre class="remote">
-		</pre>
-		<h3> Remote Connection Data:</h3>
+
+
+		<h3>Remote Connection Data:</h3>
 		<pre class="remote-connect-data">
 		</pre>
 
@@ -42,21 +89,21 @@
 				{url:'stun:stun.voipstunt.com'},
 				{url:'stun:stun.voxgratia.org'},
 				{url:'stun:stun.xten.com'},
-				{
-					url: 'turn:numb.viagenie.ca',
-					credential: 'muazkh',
-					username: 'webrtc@live.com'
-				},
-				{
-					url: 'turn:192.158.29.39:3478?transport=udp',
-					credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-					username: '28224511:1379330808'
-				},
-				{
-					url: 'turn:192.158.29.39:3478?transport=tcp',
-					credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-					username: '28224511:1379330808'
-				}
+				// {
+				// 	url: 'turn:numb.viagenie.ca',
+				// 	credential: 'muazkh',
+				// 	username: 'webrtc@live.com'
+				// },
+				// {
+				// 	url: 'turn:192.158.29.39:3478?transport=udp',
+				// 	credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+				// 	username: '28224511:1379330808'
+				// },
+				// {
+				// 	url: 'turn:192.158.29.39:3478?transport=tcp',
+				// 	credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+				// 	username: '28224511:1379330808'
+				// }
 			];
 			function fetchPeers(id) {
 				$('#peers').empty();
@@ -72,16 +119,16 @@
 
 				var config = {
 					key: 'fun',
-					// host: 'express.ngrok.com',
-					host: 'localhost',
+					host: '/',
 					port: 3001,
-					secure: true,
+					// secure: true,
 					path: 'foo',
 					config: {
 						'iceServers': servers
 					},
 					debug: 1
-				}
+				};
+
 				var id = new Date().getTime().toString(32);
 				$('.peerId').text(id);
 				var peer = new Peer(id , config);
@@ -99,8 +146,9 @@
 				peer.on('connection', function (conn) {
 					console.log(conn);
 					conn.on('data', function (data) {
-						$('.remote').text('peer: ' + conn.peer + ', just sent: ' + data);
-						console.log('[local-peer]', 'remote peer sent:', data);
+						$('.remote-peer-messages').append($('<li class="peer-message">').text(data));
+						// $('.remote').text('peer: ' + conn.peer + ', just sent: ' + data);
+						// console.log('[local-peer]', 'remote peer sent:', data);
 					});
 				});
 
@@ -108,9 +156,16 @@
 					var p2Id = $(this).text();
 					var conn = peer.connect(p2Id);
 					conn.on('open', function () {
-						var string = 'word up';
-						$('.local').text('You just sent: ' + string);
-						conn.send(string);
+						$('#remote-peer-id').text(p2Id);
+						$('input[name=chatbox-btn]').on('click', function (evnt) {
+							var string = $('input[name=chatbox]').val();
+							$('.your-messages').append($('<li class="peer-message">').text(string));
+							// console.log('sending message?');
+							conn.send(string);
+							$('input[name=chatbox]').val('');
+						});
+						// $('.local').text('You just sent: ' + string);
+
 
 						console.log('[local-peer]', 'open connection to remote peer:', p2Id);
 						conn.on('error', function (err) {
@@ -118,12 +173,8 @@
 						});
 
 						$('.remote-connect-data').text(JSON.stringify(conn.peerConnection, null, '\t'));
-
 					});
-					// console.log(conn.peerConnection);
 				});
-
-
 			});
 		</script>
 	</body>

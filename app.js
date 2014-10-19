@@ -5,14 +5,11 @@ var PeerServer = require('peer').PeerServer;
 
 var EXPRESS_PORT = 3000,
 	PEER_PORT = 3001;
+
 var options = {
 	port: PEER_PORT,
 	path: '/foo',
-	key: 'fun',
-	ssl: {
-		key: fs.readFileSync('./express.ngrok.com.key'),
-		certificate: fs.readFileSync('./express.ngrok.com.crt')
-	}
+	key: 'fun'
 };
 
 var server = new PeerServer(options);
