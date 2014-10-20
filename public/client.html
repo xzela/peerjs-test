@@ -66,6 +66,10 @@
 		<pre class="remote-connect-data">
 		</pre>
 
+		<h3>Local Connection Data:</h3>
+		<pre class="local-connect-data">
+		</pre>
+
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 		<script>
@@ -144,12 +148,10 @@
 				});
 
 				peer.on('connection', function (conn) {
-					console.log(conn);
 					conn.on('data', function (data) {
 						$('.remote-peer-messages').append($('<li class="peer-message">').text(data));
-						// $('.remote').text('peer: ' + conn.peer + ', just sent: ' + data);
-						// console.log('[local-peer]', 'remote peer sent:', data);
 					});
+
 				});
 
 				$('ul').on('click', 'li', function (evnt) {
@@ -171,8 +173,9 @@
 						conn.on('error', function (err) {
 							console.log(err);
 						});
-
-						$('.remote-connect-data').text(JSON.stringify(conn.peerConnection, null, '\t'));
+						// $('.remote-connect-data').text(JSON.stringify(conn.peerConnection.remoteDescription.sdp.replace('/\r', '\n'), null, '\t'));
+						$('.remote-connect-data').text(conn.peerConnection.remoteDescription.sdp.replace('/\r', '\n'));
+						$('.local-connect-data').text(conn.peerConnection.localDescription.sdp.replace('/\r', '\n'));
 					});
 				});
 			});
